@@ -1,9 +1,5 @@
 package br.ce.wcaquino.servicos;
 
-import static br.ce.wcaquino.utils.DataUtils.adicionarDias;
-
-import java.util.Date;
-
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -11,9 +7,34 @@ import br.ce.wcaquino.utils.DataUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Date;
+
+import static br.ce.wcaquino.utils.DataUtils.adicionarDias;
+
 public class LocacaoService {
 
-    public Locacao alugarFilme(Usuario usuario, Filme filme) {
+    public static void main(String[] args) throws Exception {
+        //cenario
+        LocacaoService service = new LocacaoService();
+        Usuario usuario = new Usuario("Usuario1");
+        Filme filme = new Filme("filme1", 2, 5.0);
+
+        // acao
+        Locacao locacao = service.alugarFilme(usuario, filme);
+
+        // verificacao
+        System.out.println(locacao.getValor());
+        System.out.println(locacao.getDataLocacao());
+        System.out.println(locacao.getDataRetorno());
+    }
+
+    public Locacao alugarFilme(Usuario usuario, Filme filme) throws Exception {
+
+
+        if (filme.getEstoque() == 0) {
+            throw new Exception("Filme sem estoque");
+        }
+
         Locacao locacao = new Locacao();
         locacao.setFilme(filme);
         locacao.setUsuario(usuario);
@@ -31,22 +52,8 @@ public class LocacaoService {
         return locacao;
     }
 
-    public static void main(String[] args) {
-        //cenario
-        LocacaoService service = new LocacaoService();
-        Usuario usuario = new Usuario("Usuario1");
-        Filme filme = new Filme("filme1", 2, 5.0);
-
-        // acao
-        Locacao locacao = service.alugarFilme(usuario, filme);
-
-        // verificacao
-        System.out.println(locacao.getValor());
-        System.out.println(locacao.getDataLocacao());
-        System.out.println(locacao.getDataRetorno());
-    }
     @Test
-    public void test() {
+    public void test() throws Exception {
         //cenario
         LocacaoService service = new LocacaoService();
         Usuario usuario = new Usuario("Usuario1");
