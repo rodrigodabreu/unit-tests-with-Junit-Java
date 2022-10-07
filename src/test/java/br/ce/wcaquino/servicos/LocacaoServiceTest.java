@@ -11,7 +11,9 @@ import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
 import exceptions.FilmeSemEstoqueException;
 import exceptions.LocadoraException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import org.junit.After;
@@ -154,11 +156,93 @@ public class LocacaoServiceTest {
   public void testeLocacao_FilmeVazio() throws FilmeSemEstoqueException, LocadoraException {
     //cenario
     Usuario usuario = new Usuario("Usuario1");
-    List<Filme> filmes = Arrays.asList();
+    List<Filme> filmes = new ArrayList<>();
 
     exception.expect(LocadoraException.class);
 
     //acao
     service.alugarFilme(usuario, filmes);
+  }
+
+  @Test
+  public void devePagar75PorcentoNoFilme3() throws FilmeSemEstoqueException, LocadoraException {
+    //cenario
+    Usuario usuario = new Usuario("Usuario1");
+    List<Filme> filmes = new ArrayList<Filme>(Collections.<Filme>emptyList());
+
+    filmes.add(new Filme("filme 1", 10, 1.0));
+    filmes.add(new Filme("filme 2", 10, 1.0));
+    filmes.add(new Filme("filme 3", 10, 1.0));
+
+    Double expected = 1 + 1 + (1 * 0.75);
+
+    //acao
+    Locacao result = service.alugarFilme(usuario, filmes);
+
+    //verificacao
+    Assert.assertThat(result.getValor(), is(expected));
+  }
+
+  @Test
+  public void devePagar50PorcentoNoFilme4() throws FilmeSemEstoqueException, LocadoraException {
+    //cenario
+    Usuario usuario = new Usuario("Usuario1");
+    List<Filme> filmes = new ArrayList<Filme>(Collections.<Filme>emptyList());
+
+    filmes.add(new Filme("filme 1", 10, 1.0));
+    filmes.add(new Filme("filme 2", 10, 1.0));
+    filmes.add(new Filme("filme 3", 10, 1.0));
+    filmes.add(new Filme("filme 4", 10, 1.0));
+
+    Double expected = 1 + 1 + (1 * 0.75) + (1 * 0.5);
+
+    //acao
+    Locacao result = service.alugarFilme(usuario, filmes);
+
+    //verificacao
+    Assert.assertThat(result.getValor(), is(expected));
+  }
+
+  @Test
+  public void devePagar25PorcentoNoFilme5() throws FilmeSemEstoqueException, LocadoraException {
+    //cenario
+    Usuario usuario = new Usuario("Usuario1");
+    List<Filme> filmes = new ArrayList<Filme>(Collections.<Filme>emptyList());
+
+    filmes.add(new Filme("filme 1", 10, 1.0));
+    filmes.add(new Filme("filme 2", 10, 1.0));
+    filmes.add(new Filme("filme 3", 10, 1.0));
+    filmes.add(new Filme("filme 4", 10, 1.0));
+    filmes.add(new Filme("filme 5", 10, 1.0));
+
+    Double expected = 1 + 1 + (1 * 0.75) + (1 * 0.5) + (1 * 0.25);
+
+    //acao
+    Locacao result = service.alugarFilme(usuario, filmes);
+
+    //verificacao
+    Assert.assertThat(result.getValor(), is(expected));
+  }
+
+  @Test
+  public void devePagar100PorcentoNoFilme6() throws FilmeSemEstoqueException, LocadoraException {
+    //cenario
+    Usuario usuario = new Usuario("Usuario1");
+    List<Filme> filmes = new ArrayList<Filme>(Collections.<Filme>emptyList());
+
+    filmes.add(new Filme("filme 1", 10, 1.0));
+    filmes.add(new Filme("filme 2", 10, 1.0));
+    filmes.add(new Filme("filme 3", 10, 1.0));
+    filmes.add(new Filme("filme 4", 10, 1.0));
+    filmes.add(new Filme("filme 5", 10, 1.0));
+    filmes.add(new Filme("filme 6", 10, 1.0));
+
+    Double expected = 1 + 1 + (1 * 0.75) + (1 * 0.5) + (1 * 0.25) + (1 * 0);
+
+    //acao
+    Locacao result = service.alugarFilme(usuario, filmes);
+
+    //verificacao
+    Assert.assertThat(result.getValor(), is(expected));
   }
 }

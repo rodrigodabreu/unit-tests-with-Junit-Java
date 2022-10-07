@@ -56,10 +56,8 @@ public class Locacao {
     return valor;
   }
 
-  public void setValor(List<Filme> filmes) {
-    for (Filme filme : filmes) {
-      this.valor += filme.getPrecoLocacao();
-    }
+  public void setValor(Double valor) {
+    this.valor = valor;
   }
 
   public List<Filme> getFilmes() {
