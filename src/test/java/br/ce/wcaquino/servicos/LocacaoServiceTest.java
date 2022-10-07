@@ -9,18 +9,22 @@ import static org.hamcrest.CoreMatchers.not;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
+import br.ce.wcaquino.utils.DataUtils;
 import exceptions.FilmeSemEstoqueException;
 import exceptions.LocadoraException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -244,5 +248,42 @@ public class LocacaoServiceTest {
 
     //verificacao
     Assert.assertThat(result.getValor(), is(expected));
+  }
+
+
+  @Ignore
+  @Test
+  public void deveDevolverFilmeNaSegundaAoAlugarNoSabado()
+      throws FilmeSemEstoqueException, LocadoraException {
+    //cenario
+    Usuario usuario = new Usuario("Usuario1");
+    List<Filme> filmes = new ArrayList<Filme>(Collections.<Filme>emptyList());
+    filmes.add(new Filme("filme 1", 10, 1.0));
+
+    //acao
+    Locacao result = service.alugarFilme(usuario, filmes);
+
+    //verificacao
+    boolean ehSegunda = DataUtils.verificarDiaSemana(result.getDataRetorno(), Calendar.MONDAY);
+    Assert.assertEquals(true, ehSegunda);
+  }
+
+
+  @Test
+  public void deveDevolverFilmeNaSegundaAoAlugarNoSabadoUtilizandoOAssumptions()
+      throws FilmeSemEstoqueException, LocadoraException {
+    Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
+
+    //cenario
+    Usuario usuario = new Usuario("Usuario1");
+    List<Filme> filmes = new ArrayList<Filme>(Collections.<Filme>emptyList());
+    filmes.add(new Filme("filme 1", 10, 1.0));
+
+    //acao
+    Locacao result = service.alugarFilme(usuario, filmes);
+
+    //verificacao
+    boolean ehSegunda = DataUtils.verificarDiaSemana(result.getDataRetorno(), Calendar.MONDAY);
+    Assert.assertEquals(true, ehSegunda);
   }
 }
