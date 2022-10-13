@@ -2,9 +2,13 @@ package br.ce.wcaquino.servicos;
 
 import static br.ce.wcaquino.utils.DataUtils.isMesmaData;
 import static br.ce.wcaquino.utils.DataUtils.obterDataComDiferencaDias;
+import static matchers.MatcherProprios.caiNumaSegunda;
+import static matchers.MatcherProprios.ehHoje;
+import static matchers.MatcherProprios.ehHojeComDiferencaDeDia;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
@@ -94,6 +98,8 @@ public class LocacaoServiceTest {
     error.checkThat(locacao.getValor(), is(equalTo(5.0)));
     error.checkThat(isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
     error.checkThat(isMesmaData(locacao.getDataRetorno(), obterDataComDiferencaDias(1)), is(true));
+    error.checkThat(locacao.getDataRetorno(), ehHojeComDiferencaDeDia(1));
+    error.checkThat(locacao.getDataRetorno(), ehHoje());
   }
 
   @Test
@@ -168,87 +174,7 @@ public class LocacaoServiceTest {
     service.alugarFilme(usuario, filmes);
   }
 
-  @Test
-  public void devePagar75PorcentoNoFilme3() throws FilmeSemEstoqueException, LocadoraException {
-    //cenario
-    Usuario usuario = new Usuario("Usuario1");
-    List<Filme> filmes = new ArrayList<Filme>(Collections.<Filme>emptyList());
-
-    filmes.add(new Filme("filme 1", 10, 1.0));
-    filmes.add(new Filme("filme 2", 10, 1.0));
-    filmes.add(new Filme("filme 3", 10, 1.0));
-
-    Double expected = 1 + 1 + (1 * 0.75);
-
-    //acao
-    Locacao result = service.alugarFilme(usuario, filmes);
-
-    //verificacao
-    Assert.assertThat(result.getValor(), is(expected));
-  }
-
-  @Test
-  public void devePagar50PorcentoNoFilme4() throws FilmeSemEstoqueException, LocadoraException {
-    //cenario
-    Usuario usuario = new Usuario("Usuario1");
-    List<Filme> filmes = new ArrayList<Filme>(Collections.<Filme>emptyList());
-
-    filmes.add(new Filme("filme 1", 10, 1.0));
-    filmes.add(new Filme("filme 2", 10, 1.0));
-    filmes.add(new Filme("filme 3", 10, 1.0));
-    filmes.add(new Filme("filme 4", 10, 1.0));
-
-    Double expected = 1 + 1 + (1 * 0.75) + (1 * 0.5);
-
-    //acao
-    Locacao result = service.alugarFilme(usuario, filmes);
-
-    //verificacao
-    Assert.assertThat(result.getValor(), is(expected));
-  }
-
-  @Test
-  public void devePagar25PorcentoNoFilme5() throws FilmeSemEstoqueException, LocadoraException {
-    //cenario
-    Usuario usuario = new Usuario("Usuario1");
-    List<Filme> filmes = new ArrayList<Filme>(Collections.<Filme>emptyList());
-
-    filmes.add(new Filme("filme 1", 10, 1.0));
-    filmes.add(new Filme("filme 2", 10, 1.0));
-    filmes.add(new Filme("filme 3", 10, 1.0));
-    filmes.add(new Filme("filme 4", 10, 1.0));
-    filmes.add(new Filme("filme 5", 10, 1.0));
-
-    Double expected = 1 + 1 + (1 * 0.75) + (1 * 0.5) + (1 * 0.25);
-
-    //acao
-    Locacao result = service.alugarFilme(usuario, filmes);
-
-    //verificacao
-    Assert.assertThat(result.getValor(), is(expected));
-  }
-
-  @Test
-  public void devePagar100PorcentoNoFilme6() throws FilmeSemEstoqueException, LocadoraException {
-    //cenario
-    Usuario usuario = new Usuario("Usuario1");
-    List<Filme> filmes = new ArrayList<Filme>(Collections.<Filme>emptyList());
-
-    filmes.add(new Filme("filme 1", 10, 1.0));
-    filmes.add(new Filme("filme 2", 10, 1.0));
-    filmes.add(new Filme("filme 3", 10, 1.0));
-    filmes.add(new Filme("filme 4", 10, 1.0));
-    filmes.add(new Filme("filme 5", 10, 1.0));
-    filmes.add(new Filme("filme 6", 10, 1.0));
-
-    Double expected = 1 + 1 + (1 * 0.75) + (1 * 0.5) + (1 * 0.25) + (1 * 0);
-
-    //acao
-    Locacao result = service.alugarFilme(usuario, filmes);
-
-    //verificacao
-    Assert.assertThat(result.getValor(), is(expected));
-  }
+//
 
 
   @Ignore
@@ -285,5 +211,97 @@ public class LocacaoServiceTest {
     //verificacao
     boolean ehSegunda = DataUtils.verificarDiaSemana(result.getDataRetorno(), Calendar.MONDAY);
     Assert.assertEquals(true, ehSegunda);
+
+    //3 outras formas de criar uma verificação com Matchers Próprios
+//    assertThat(result.getDataRetorno(), new DiaSemanaMatcher(Calendar.MONDAY));
+//    assertThat(result.getDataRetorno(), caiEm(Calendar.MONDAY));
+    assertThat(result.getDataRetorno(), caiNumaSegunda(Calendar.MONDAY));
   }
+
+  // Testes desnecessários tendo em vista que os mesmos foram replicados de forma parametrizada na classe CalculoValorLocacaoTest
+//  @Test
+//  public void devePagar75PorcentoNoFilme3() throws FilmeSemEstoqueException, LocadoraException {
+//    //cenario
+//    Usuario usuario = new Usuario("Usuario1");
+//    List<Filme> filmes = new ArrayList<Filme>(Collections.<Filme>emptyList());
+//
+//    filmes.add(new Filme("filme 1", 10, 1.0));
+//    filmes.add(new Filme("filme 2", 10, 1.0));
+//    filmes.add(new Filme("filme 3", 10, 1.0));
+//
+//    //esperado = 2.75
+//    Double expected = 1 + 1 + (1 * 0.75);
+//
+//    //acao
+//    Locacao result = service.alugarFilme(usuario, filmes);
+//
+//    //verificacao
+//    Assert.assertThat(result.getValor(), is(expected));
+//  }
+//
+//  @Test
+//  public void devePagar50PorcentoNoFilme4() throws FilmeSemEstoqueException, LocadoraException {
+//    //cenario
+//    Usuario usuario = new Usuario("Usuario1");
+//    List<Filme> filmes = new ArrayList<Filme>(Collections.<Filme>emptyList());
+//
+//    filmes.add(new Filme("filme 1", 10, 1.0));
+//    filmes.add(new Filme("filme 2", 10, 1.0));
+//    filmes.add(new Filme("filme 3", 10, 1.0));
+//    filmes.add(new Filme("filme 4", 10, 1.0));
+//
+//    //esperado = 3.25
+//    Double expected = 1 + 1 + (1 * 0.75) + (1 * 0.5);
+//
+//    //acao
+//    Locacao result = service.alugarFilme(usuario, filmes);
+//
+//    //verificacao
+//    Assert.assertThat(result.getValor(), is(expected));
+//  }
+//
+//  @Test
+//  public void devePagar25PorcentoNoFilme5() throws FilmeSemEstoqueException, LocadoraException {
+//    //cenario
+//    Usuario usuario = new Usuario("Usuario1");
+//    List<Filme> filmes = new ArrayList<Filme>(Collections.<Filme>emptyList());
+//
+//    filmes.add(new Filme("filme 1", 10, 1.0));
+//    filmes.add(new Filme("filme 2", 10, 1.0));
+//    filmes.add(new Filme("filme 3", 10, 1.0));
+//    filmes.add(new Filme("filme 4", 10, 1.0));
+//    filmes.add(new Filme("filme 5", 10, 1.0));
+//
+//    //esperado = 3,25
+//    Double expected = 1 + 1 + (1 * 0.75) + (1 * 0.5) + (1 * 0.25);
+//
+//    //acao
+//    Locacao result = service.alugarFilme(usuario, filmes);
+//
+//    //verificacao
+//    Assert.assertThat(result.getValor(), is(expected));
+//  }
+//
+//  @Test
+//  public void devePagar100PorcentoNoFilme6() throws FilmeSemEstoqueException, LocadoraException {
+//    //cenario
+//    Usuario usuario = new Usuario("Usuario1");
+//    List<Filme> filmes = new ArrayList<Filme>(Collections.<Filme>emptyList());
+//
+//    filmes.add(new Filme("filme 1", 10, 1.0));
+//    filmes.add(new Filme("filme 2", 10, 1.0));
+//    filmes.add(new Filme("filme 3", 10, 1.0));
+//    filmes.add(new Filme("filme 4", 10, 1.0));
+//    filmes.add(new Filme("filme 5", 10, 1.0));
+//    filmes.add(new Filme("filme 6", 10, 1.0));
+//
+//    //esperado = 3,50
+//    Double expected = 1 + 1 + (1 * 0.75) + (1 * 0.5) + (1 * 0.25) + (1 * 0);
+//
+//    //acao
+//    Locacao result = service.alugarFilme(usuario, filmes);
+//
+//    //verificacao
+//    Assert.assertThat(result.getValor(), is(expected));
+//  }
 }
