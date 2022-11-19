@@ -1,7 +1,5 @@
 package br.ce.wcaquino.entidades;
 
-import java.util.Objects;
-
 public class Usuario {
 
 	private String nome;
@@ -33,5 +31,12 @@ public class Usuario {
 	@Override
 	public int hashCode() {
 		return nome != null ? nome.hashCode() : 0;
+	}
+
+	@Override
+	public String toString() {
+		return "Usuario{" +
+				"nome='" + nome + '\'' +
+				'}';
 	}
 }

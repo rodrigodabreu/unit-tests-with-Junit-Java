@@ -77,4 +77,17 @@ public class CalculadoraTest {
     double result = calculadora.dividir(a, b);
   }
 
+  @Test
+  public void deveDividirDoisValores() {
+    //cenario
+    String a = "6";
+    String b = "3";
+
+    //acao
+    int result = calculadora.divide(a, b);
+
+    //verficacao
+    Assert.assertEquals(2, result);
+  }
+
 }

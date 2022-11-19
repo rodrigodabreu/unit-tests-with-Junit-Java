@@ -2,6 +2,7 @@ package br.ce.wcaquino.servicos;
 
 import static br.ce.wcaquino.utils.DataUtils.adicionarDias;
 
+import br.ce.wcaquino.daos.LocacaoDao;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -16,6 +17,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class LocacaoService {
+
+  private LocacaoDao dao;
+  private SPCService spcService;
+  private EmailService emailService;
 
   public Locacao alugarFilme(Usuario usuario, List<Filme> filmes)
       throws FilmeSemEstoqueException, LocadoraException {
@@ -34,6 +39,10 @@ public class LocacaoService {
       }
     }
 
+    if (spcService.possuiNegativacao(usuario)) {
+      throw new LocadoraException("Usuário negativado");
+    }
+
     Locacao locacao = new Locacao();
     locacao.setFilmes(filmes);
     locacao.setUsuario(usuario);
@@ -50,8 +59,23 @@ public class LocacaoService {
 
     //Salvando a locacao...
     //TODO adicionar método para salvar
+    dao.salvar(locacao);
 
     return locacao;
+  }
+
+  public void setLocacaoDAO(LocacaoDao dao) {
+    this.dao = dao;
+  }
+
+  public void notificarAtrasos() {
+    List<Locacao> locacoes = dao.obterLocacoesPendentes();
+    for (Locacao lococao : locacoes) {
+      if (lococao.getDataRetorno().before(
+          new Date())) { //envia apenas para aquelas que tiver a data retorno depois da data atual
+        emailService.notificarAtraso(lococao.getUsuario());
+      }
+    }
   }
 
   private Double calcularValorTotalLocacao(List<Filme> filmes) {
@@ -98,5 +122,13 @@ public class LocacaoService {
     Assert.assertTrue(
         DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1))
     );
+  }
+
+  public void setSpcService(SPCService spcService) {
+    this.spcService = spcService;
+  }
+
+  public void setEmailService(EmailService emailService) {
+    this.emailService = emailService;
   }
 }

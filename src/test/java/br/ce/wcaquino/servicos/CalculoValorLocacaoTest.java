@@ -2,6 +2,7 @@ package br.ce.wcaquino.servicos;
 
 import static org.hamcrest.CoreMatchers.is;
 
+import br.ce.wcaquino.daos.LocacaoDao;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -17,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
+import org.mockito.Mockito;
 
 @RunWith(Parameterized.class)
 public class CalculoValorLocacaoTest {
@@ -35,6 +37,8 @@ public class CalculoValorLocacaoTest {
   @Parameter(value = 2)
   public String descricaoCenario;
   private LocacaoService service;
+  private SPCService spcService;
+  private LocacaoDao dao;
 
   //sinaliza ao JUnit que esse método será a fonte de dados
   //esse método deve ser estático
@@ -57,6 +61,10 @@ public class CalculoValorLocacaoTest {
   @Before
   public void setup() {
     service = new LocacaoService();
+    dao = Mockito.mock(LocacaoDao.class);
+    spcService = Mockito.mock(SPCService.class);
+    service.setLocacaoDAO(dao);
+    service.setSpcService(spcService);
   }
 
   @Test
