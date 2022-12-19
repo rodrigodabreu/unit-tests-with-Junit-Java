@@ -4,19 +4,19 @@ import exceptions.NaoPodeDividirPorZeroException;
 
 public class Calculadora {
 
-  public int somar(int a, int b) {
+  public int somar(final int a, final int b) {
     return a + b;
   }
 
-  public int multiplicar(int a, int b) {
+  public int multiplicar(final int a, final int b) {
     return a * b;
   }
 
-  public int subtrair(int a, int b) {
+  public int subtrair(final int a, final int b) {
     return a - b;
   }
 
-  public double dividir(int a, int b) throws NaoPodeDividirPorZeroException {
+  public double dividir(final int a, final int b) throws NaoPodeDividirPorZeroException {
     if (b == 0) {
       throw new NaoPodeDividirPorZeroException();
     }
@@ -26,5 +26,4 @@ public class Calculadora {
   public int divide(String a, String b) {
     return Integer.valueOf(a) / Integer.valueOf(b);
   }
-
 }
