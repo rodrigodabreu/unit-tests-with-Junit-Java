@@ -9,9 +9,7 @@ import static matchers.MatcherProprios.ehHojeComDiferencaDeDia;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import br.ce.wcaquino.daos.LocacaoDao;
 import br.ce.wcaquino.entidades.Filme;
@@ -21,12 +19,14 @@ import builder.FilmeBuilder;
 import builder.UsuarioBuilder;
 import exceptions.FilmeSemEstoqueException;
 import exceptions.LocadoraException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -368,7 +368,13 @@ public class LocacaoServiceTest {
     List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().agora());
 
     //Definindo o comportamento esperado da classe com o Mockito
-    when(spcService.possuiNegativacao(usuario)).thenReturn(Boolean.TRUE);
+    //when(spcService.possuiNegativacao(usuario)).thenReturn(Boolean.TRUE);
+    when(spcService.possuiNegativacao(Mockito.any(Usuario.class))) //Utilizando Matchers ao invés de ter que passar como parâmetro uma instância do que é requerido
+        .thenReturn(Boolean.TRUE);
+
+    /*
+    OBS: Caso um método que está sendo verificado utilizar matcher em um dos parâmetros, os demais parâmetros tb devemos utilizar o matchers.
+     */
 
     exception.expect(LocadoraException.class);
     exception.expectMessage("Usuário negativado");
@@ -400,6 +406,21 @@ public class LocacaoServiceTest {
     Mockito.verify(emailService).notificarAtraso(usuario1);
     Mockito.verify(emailService, never()).notificarAtraso(
         usuarioEmDia); //dessa forma conseguimos verificar que um usuário em dia não será notificado
+    verifyNoMoreInteractions(
+        emailService); //Outra forma de realizar uma verificação que não ocorre iteração com o método
+    verifyZeroInteractions(spcService); //Mais uma nova forma de verificar que não houve iterações
 
+    //outras formas de verificaçãoes existentes
+    verify(emailService, Mockito.times(1)).notificarAtraso(usuario1);
+    verify(emailService, Mockito.atLeast(1)).notificarAtraso(usuario1);
+    verify(emailService, Mockito.atLeastOnce()).notificarAtraso(usuario1);
+
+    //verificação genérica, não importando para quem foi enviado, mas apenas a quantidade - Utilizando o Matcher.Any()
+    verify(emailService, Mockito.times(1)).notificarAtraso(Mockito.any(Usuario.class));
+
+
+    /*
+    Verificações demais num cenário de teste não são de fato relevantes e precisamos verificar o que realmente faz sentido para o cenário de testes em questão
+     */
   }
 }
